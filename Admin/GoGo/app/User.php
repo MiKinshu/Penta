@@ -36,4 +36,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function channels()
+    {
+        return $this->hasMany('App\Channel', 'user_id', 'id');
+    }
+
 }
