@@ -13,10 +13,10 @@
 .externalNativeBuild
 .cxx
 dist/
-en_core_web_md/
+Search/en_core_web_md/
 gog/
 gogo/
-cricket.txt
-quick.txt
+Search/cricket.txt
+Search/quick.txt
 en_core_web_md-2.3.1.tar.gz
 .vscode/
