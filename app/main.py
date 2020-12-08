@@ -5,10 +5,7 @@ from parse import readPdfFile
 from flask import Flask, request
 app = Flask(__name__)
 
-try:
-    nlp = spacy.load('en_core_web_md')
-except:
-    pass
+nlp = spacy.load('en_core_web_md')
 
 def get_simil(keyword, doc):
     keys = nlp(keyword)
