@@ -39,8 +39,5 @@ def index():
         print(request.content_type)
         return "Content type not supported"
 
-
-# keyword = 'Which is the most popular format of cricket?'
-# keyword = 'How many players are there in baseball team?'
-# keyword = 'What countries participate in baseball?'
-# keyword = 'How is baseball played?'
+if __name__ == '__main__':
+    app.run()
