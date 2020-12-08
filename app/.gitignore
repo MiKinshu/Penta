@@ -1,1 +1,6 @@
+<<<<<<< HEAD
 /build
+=======
+__pycache__/
+en_core_web_md/
+>>>>>>> 854fe3f... Added hosting files
