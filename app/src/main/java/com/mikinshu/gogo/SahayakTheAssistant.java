@@ -126,7 +126,6 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
     private void onRecordAudioPermissionGranted() {
         button.setVisibility(View.GONE);
         linearLayout.setVisibility(View.VISIBLE);
-
         try {
             Speech.getInstance().stopTextToSpeech();
             Speech.getInstance().startListening(progress, SahayakTheAssistant.this);
@@ -197,11 +196,12 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
     public void onSpeechResult(String result) {
         button.setVisibility(View.VISIBLE);
         linearLayout.setVisibility(View.GONE);
-
         text.setText(result);
-
         if (result.isEmpty()) {
             Speech.getInstance().say(getString(R.string.repeat));
         }
+
+
+
     }
 }
