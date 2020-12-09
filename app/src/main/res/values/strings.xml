@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">gogo</string>
+    <string name="app_name">penta</string>
     <string name="start_listening">Start listening</string>
     <string name="stop_listening">Stop listening</string>
     <string name="say_something">Say</string>
@@ -16,4 +16,5 @@
     <string name="set_tts_voices">Set Text To Speech Voice</string>
     <string name="no_langs">No languages are currently available on this device</string>
     <string name="no_tts_voices">No supported voices or you\'re running on Android API &lt; 23, which does not support querying for voices.</string>
+    <string name="server">https://pentap.loca.lt</string>
 </resources>

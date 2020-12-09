@@ -9,13 +9,14 @@
 
     <TextView
         android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="8dp"
         android:layout_marginTop="36dp"
         android:layout_marginEnd="8dp"
+        android:justificationMode="inter_word"
         android:scrollbars="vertical"
         android:textColor="#ffffff"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
@@ -40,8 +41,8 @@
 
         <net.gotev.speech.ui.SpeechProgressView
             android:id="@+id/progress"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_width="120dp"
+            android:layout_height="150dp" />
     </LinearLayout>
 
     <ImageButton

@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -40,6 +41,7 @@ import chtgupta.qrutils.qractivity.QRScanner;
 
 public class MainActivity extends AppCompatActivity {
     public static Integer ORG = -1;
+    public static String Name = "NONE";
     private final int QR_SCAN_REQUEST_CODE = 123;
     private static final int RC_SIGN_IN = 1;
     public static String TAG = "MyLogs";
@@ -50,41 +52,43 @@ public class MainActivity extends AppCompatActivity {
     //User details
     public static String mUsername, mEmail;
 
-
-
     //Firebase
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
 
-    void setUpApplication() {
-        if (ORG == -1) {
-            button = findViewById(R.id.button);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivityForResult(
-                            new QRScanner(getBaseContext())
-                                    .setFullScreen(false)
-                                    .setAutoFocusInterval(2000)
-                                    .setFocusOnTouchEnabled(true)
-                                    .build(), QR_SCAN_REQUEST_CODE
-                    );
-                }
-            });
+    //Listview
+    public ArrayList<Integer> ID;
+    public ArrayList<String> Names;
 
-            dialog=new ProgressDialog(MainActivity.this);
-            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+    void setUpApplication() {
+        button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivityForResult(
+                        new QRScanner(getBaseContext())
+                                .setFullScreen(false)
+                                .setAutoFocusInterval(2000)
+                                .setFocusOnTouchEnabled(true)
+                                .build(), QR_SCAN_REQUEST_CODE
+                );
+            }
+        });
+
+        dialog = new ProgressDialog(MainActivity.this);
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        if(ID == null || Names == null)
             new RetriveDetails().execute();
-        } else {
-            Intent intent = new Intent(MainActivity.this, SahayakTheAssistant.class);
-            startActivity(intent);
-        }
     }
 
     class RetriveDetails extends AsyncTask<Void,Void,String> {
-        ArrayList<Integer> ID = new ArrayList<>();
-        ArrayList<String> Names = new ArrayList<>();
         @SuppressLint("WrongThread")
+
+        public RetriveDetails(){
+            ID = new ArrayList<>();
+            Names = new ArrayList<>();
+        }
+
         @Override
         protected void onPreExecute(){
             super.onPreExecute();
@@ -95,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... voids) {
             try {
-                URL audiodb = new URL("https://gogo1.loca.lt/channel/all");
+                URL audiodb = new URL(getString(R.string.server) + "/channel/all");
                 HttpURLConnection myConnection =(HttpURLConnection) audiodb.openConnection();
                 InputStream stream = new BufferedInputStream(myConnection.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
@@ -110,10 +114,12 @@ public class MainActivity extends AppCompatActivity {
                     ID.add(o.getInt("id"));
                     Names.add(o.getString("name"));
                 }
-                myConnection.disconnect();
             }
             catch (IOException | JSONException e) {
                 e.printStackTrace();
+            }
+            finally {
+                dialog.dismiss();
             }
             return "";
         }
@@ -131,14 +137,14 @@ public class MainActivity extends AppCompatActivity {
             for(int i = 0; i < Names.size(); i++) {
                 orgArray[i] = Names.get(i);
             }
-            ArrayAdapter adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.activity_listview, orgArray);
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, R.layout.activity_listview, orgArray);
             ListView listView = findViewById(R.id.orgList);
             listView.setAdapter(adapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     ORG = ID.get(position);
-                    Toast.makeText(getApplicationContext(), orgArray[position], Toast.LENGTH_LONG).show();
+                    Name = Names.get(position);
                     Intent intent = new Intent(MainActivity.this, SahayakTheAssistant.class);
                     startActivity(intent);
                 }
@@ -151,9 +157,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mFirebaseAuth = FirebaseAuth.getInstance();
-
-        this.getSupportActionBar().hide();
-
+        Objects.requireNonNull(this.getSupportActionBar()).hide();
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -196,7 +200,12 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == QR_SCAN_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
-                ORG = Integer.parseInt(Objects.requireNonNull(data.getStringExtra("qrData")));
+                String rec = Objects.requireNonNull(data).getStringExtra("qrData");
+                String[] split = Objects.requireNonNull(rec).split("~");
+                ORG = Integer.parseInt(split[0]);
+                Name = split[1];
+                Log.d(TAG, "onActivityResult: " + split[0]);
+                Log.d(TAG, "onActivityResult: " + split[1]);
                 Intent intent = new Intent(MainActivity.this, SahayakTheAssistant.class);
                 startActivity(intent);
             } else if (resultCode == RESULT_CANCELED) {

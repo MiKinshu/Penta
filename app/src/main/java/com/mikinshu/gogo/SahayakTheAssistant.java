@@ -1,13 +1,14 @@
 package com.mikinshu.gogo;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.speech.tts.TextToSpeech;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -44,6 +45,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.text.Layout.JUSTIFICATION_MODE_INTER_WORD;
+
 public class SahayakTheAssistant extends AppCompatActivity implements SpeechDelegate {
 
     private final int PERMISSIONS_REQUEST = 1;
@@ -65,6 +68,8 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
             switch (status) {
                 case TextToSpeech.SUCCESS:
                     Logger.info(LOG_TAG, "TextToSpeech engine successfully started");
+                    Log.d(TAG, "onInit: TextToSpeech engine successfully started");
+                    publishAns("Hi I am " + MainActivity.Name + "!\nAsk me anything!");
                     break;
 
                 case TextToSpeech.ERROR:
@@ -88,13 +93,9 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
         Speech.init(this, getPackageName(), mTttsInitListener);
 
         OkHttpClient.Builder b = new OkHttpClient.Builder();
-        b.readTimeout(15000, TimeUnit.MILLISECONDS);
-        b.writeTimeout(15000, TimeUnit.MILLISECONDS);
-// set other properties
-
+        b.readTimeout(25000, TimeUnit.MILLISECONDS);
+        b.writeTimeout(25000, TimeUnit.MILLISECONDS);
         client = b.build();
-
-//        client = new OkHttpClient();
 
         linearLayout = findViewById(R.id.linearLayout);
 
@@ -107,8 +108,15 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
         });
 
         text = findViewById(R.id.text);
-        progress = findViewById(R.id.progress);
+        text.setMovementMethod(new ScrollingMovementMethod());
+        text.setText("Hi I am " + MainActivity.Name + "!\nAsk me anything!");
+        text.setTextSize(1, 25);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Log.d(TAG, "onCreate: Justification done");
+            text.setJustificationMode(JUSTIFICATION_MODE_INTER_WORD);
+        }
 
+        progress = findViewById(R.id.progress);
         int[] colors = {
                 ContextCompat.getColor(this, android.R.color.black),
                 ContextCompat.getColor(this, android.R.color.darker_gray),
@@ -121,8 +129,9 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        // prevent memory leaks when activity is destroyed
         Speech.getInstance().shutdown();
+        super.onDestroy();
     }
 
     @Override
@@ -224,7 +233,7 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
     String sendRequest(String Query){
         Log.d(TAG, "sendRequest: " + MainActivity.ORG);
         HttpUrl.Builder urlBuilder
-                = HttpUrl.parse("https://gogo1.loca.lt" + "/channel/" + MainActivity.ORG + "/query").newBuilder();
+                = HttpUrl.parse(getString(R.string.server) + "/channel/" + MainActivity.ORG + "/query").newBuilder();
         urlBuilder.addQueryParameter("query", Query);
         urlBuilder.addQueryParameter("email", MainActivity.mEmail);
         String url = urlBuilder.build().toString();
@@ -259,40 +268,24 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
     }
 
     void publishAns(String answer) {
-        Speech.getInstance().say(answer);
+        Log.d(TAG, "publishAns: Answer");
         text.setText(answer);
+        Speech.getInstance().say(answer);
     }
 
     @Override
     public void onSpeechResult(String result) {
         button.setVisibility(View.VISIBLE);
         linearLayout.setVisibility(View.GONE);
-        text.setText(result);
+        text.setText(result + "?");
         Log.d(TAG, "onSpeechResult: " + result);
         if (result.isEmpty()) {
             Speech.getInstance().say(getString(R.string.repeat));
         } else {
-            text.setText("Fetching Answer. Please Wait...");
+            result = result.substring(0, 1).toUpperCase() + result.substring(1);
+            Log.d(TAG, "onSpeechResult: result" + result);
+            text.setText(result + "?" + "\nFetching Answer. Please Wait...");
             sendRequest(result);
         }
-    }
-
-    boolean doubleBackToExitPressedOnce = false;
-
-    @Override
-    public void onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
-            finishAffinity();
-            System.exit(0);
-        }
-        this.doubleBackToExitPressedOnce = true;
-        Toast.makeText(this, "Restart to scan another code.\nPress back again to exit.", Toast.LENGTH_SHORT).show();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce=false;
-            }
-        }, 2000);
     }
 }
