@@ -20,5 +20,7 @@ It is really like bringing inanimate objects to life! Similar situations arise w
 * Prateek Mishra
 
 See also the list of [contributors](https://github.com/MiKinshu/Gogo/graphs/contributors) who participated in the project.
+
 Check out the designed entry of our project on [Figma](https://www.figma.com/file/PJh6dyNK2T9Wau9k1xHXOg/Gogo?node-id=3%3A3) :tada:
-Chek out the video presentation of our project [YouTube](https://www.youtube.com/watch?v=XWp59RgBb0c)
+
+Check out the video presentation of our project [YouTube](https://www.youtube.com/watch?v=XWp59RgBb0c)
