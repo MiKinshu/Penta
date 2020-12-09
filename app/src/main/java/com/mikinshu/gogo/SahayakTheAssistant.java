@@ -1,16 +1,14 @@
 package com.mikinshu.gogo;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,6 +16,12 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import net.gotev.speech.GoogleVoiceTypingDisabledException;
 import net.gotev.speech.Logger;
@@ -27,12 +31,23 @@ import net.gotev.speech.SpeechRecognitionNotAvailable;
 import net.gotev.speech.SpeechUtil;
 import net.gotev.speech.ui.SpeechProgressView;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
 import java.util.List;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class SahayakTheAssistant extends AppCompatActivity implements SpeechDelegate {
 
     private final int PERMISSIONS_REQUEST = 1;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    public static String TAG = "MyLogs";
 
     private ImageButton button;
     private Button speak;
@@ -40,6 +55,9 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
     private EditText textToSpeech;
     private SpeechProgressView progress;
     private LinearLayout linearLayout;
+
+    OkHttpClient client;
+
 
     private TextToSpeech.OnInitListener mTttsInitListener = new TextToSpeech.OnInitListener() {
         @Override
@@ -66,6 +84,9 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
         setContentView(R.layout.activity_sahayak_the_assistant);
 
         Speech.init(this, getPackageName(), mTttsInitListener);
+
+
+        client = new OkHttpClient();
 
         linearLayout = findViewById(R.id.linearLayout);
 
@@ -192,16 +213,65 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
         }
     }
 
+    String sendRequest(String Query){
+        Log.d(TAG, "sendRequest: " + MainActivity.ORG);
+        HttpUrl.Builder urlBuilder
+                = HttpUrl.parse("https://gogoadmin.loca.lt" + "/channel/" + MainActivity.ORG + "/query").newBuilder();
+        urlBuilder.addQueryParameter("query", Query);
+        urlBuilder.addQueryParameter("email", MainActivity.mEmail);
+        String url = urlBuilder.build().toString();
+        Log.d(TAG, "sendRequest: " + url);
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        final String[] ret = new String[1];
+        final Handler mHandler = new Handler(Looper.getMainLooper());
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull final Response response) {
+                try {
+                    ret[0] = response.body().string();
+                    Log.d(TAG, "run: " + ret[0]);
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            publishAns(ret[0]);
+                        }
+                    });
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                e.printStackTrace();
+            }
+        });
+        return ret[0];
+    }
+
+    void publishAns(String answer) {
+        Speech.getInstance().say(answer);
+        text.setText(answer);
+    }
+
     @Override
     public void onSpeechResult(String result) {
         button.setVisibility(View.VISIBLE);
         linearLayout.setVisibility(View.GONE);
         text.setText(result);
+        Log.d(TAG, "onSpeechResult: " + result);
         if (result.isEmpty()) {
             Speech.getInstance().say(getString(R.string.repeat));
+        } else {
+            text.setText("Fetching Answer. Please Wait...");
+            sendRequest(result);
         }
+    }
 
-
-
+    @Override
+    public void onBackPressed() {
+        MainActivity.ORG = -1;
+        super.onBackPressed();
     }
 }
