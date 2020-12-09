@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     //User details
     public static String mUsername, mEmail;
 
+
+
     //Firebase
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthStateListener;
@@ -93,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... voids) {
             try {
-                URL audiodb = new URL("https://gogoadmin.loca.lt/channel/all");
+                URL audiodb = new URL("https://gogogo.loca.lt/channel/all");
                 HttpURLConnection myConnection =(HttpURLConnection) audiodb.openConnection();
                 InputStream stream = new BufferedInputStream(myConnection.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
@@ -149,6 +151,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mFirebaseAuth = FirebaseAuth.getInstance();
+
+        this.getSupportActionBar().hide();
+
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {

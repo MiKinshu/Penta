@@ -35,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -57,7 +58,6 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
     private LinearLayout linearLayout;
 
     OkHttpClient client;
-
 
     private TextToSpeech.OnInitListener mTttsInitListener = new TextToSpeech.OnInitListener() {
         @Override
@@ -85,8 +85,14 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
 
         Speech.init(this, getPackageName(), mTttsInitListener);
 
+        OkHttpClient.Builder b = new OkHttpClient.Builder();
+        b.readTimeout(15000, TimeUnit.MILLISECONDS);
+        b.writeTimeout(15000, TimeUnit.MILLISECONDS);
+// set other properties
 
-        client = new OkHttpClient();
+        client = b.build();
+
+//        client = new OkHttpClient();
 
         linearLayout = findViewById(R.id.linearLayout);
 
@@ -216,7 +222,7 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
     String sendRequest(String Query){
         Log.d(TAG, "sendRequest: " + MainActivity.ORG);
         HttpUrl.Builder urlBuilder
-                = HttpUrl.parse("https://gogoadmin.loca.lt" + "/channel/" + MainActivity.ORG + "/query").newBuilder();
+                = HttpUrl.parse("https://gogogo.loca.lt" + "/channel/" + MainActivity.ORG + "/query").newBuilder();
         urlBuilder.addQueryParameter("query", Query);
         urlBuilder.addQueryParameter("email", MainActivity.mEmail);
         String url = urlBuilder.build().toString();
