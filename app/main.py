@@ -3,6 +3,7 @@ from sentence_transformers import SentenceTransformer, util
 import torch
 from parse import get_text
 import nltk
+from cleantext import clean
 from flask import Flask, request
 
 app = Flask(__name__)
@@ -11,6 +12,8 @@ nlp = spacy.load('en_core_web_md')
 embedder = SentenceTransformer('distilbert-base-nli-stsb-mean-tokens')
 
 def get_simil_2(query, corpus, top_k = 5):
+    if(len(corpus)<10):
+        top_k = min(len(corpus),2)
     corpus_embeddings = embedder.encode(corpus, convert_to_tensor=True)
     query_embedding = embedder.encode(query, convert_to_tensor=True)
     cos_scores = util.pytorch_cos_sim(query_embedding, corpus_embeddings)[0]
@@ -18,7 +21,9 @@ def get_simil_2(query, corpus, top_k = 5):
     top_results = torch.topk(cos_scores, k=top_k)
     ans = ''
     for score, idx in zip(top_results[0], top_results[1]):
-        ans += corpus[idx]
+        ans += ' ' + corpus[idx]
+    ans = clean(ans, no_line_breaks=True, lower=False)
+    print(ans)
     return ans
 
 def get_simil(keyword, data):
@@ -30,9 +35,10 @@ def get_simil(keyword, data):
         pq.append((tot, sent))
     pq.sort(reverse=True)
     ans = ''
-    cut = max(5, int(len(pq)*0.1))
+    cut = max(min(len(pq),5), int(len(pq)*0.1))
     for i in range(cut):
         ans += pq[i][1].text
+    print(ans)
     return ans
 
 @app.route('/', methods=['POST'])
@@ -51,6 +57,7 @@ def index():
     if len(data)> 5 and data[0:4] == 'http':
         data = get_text(data)
     data = tokenizer.tokenize(data)
+    print(query)
     ans = get_simil_2(query, data)
     return ans
 

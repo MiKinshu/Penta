@@ -88,7 +88,7 @@ class ChannelsController extends Controller
               return $request->get("email");
             }
         }
-        $url = 'https://gogo.loca.lt';
+        $url = 'https://gogos.loca.lt';
         $data = array('query' => $query, 'data' => $data);
 
         $options = array(

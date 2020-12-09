@@ -13,5 +13,6 @@ def get_text(URL):
     for c in txt:
         full = full + c
     full = full.replace('\n', ' ')
-    clean(full, no_line_breaks=True)
+    full = clean(full, no_line_breaks=True)
+    print(full)
     return full
