@@ -14,7 +14,6 @@
 .cxx
 dist/
 gog/
-gogo/
 Search/cricket.txt
 Search/quick.txt
 en_core_web_md-2.3.1.tar.gz

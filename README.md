@@ -1,8 +1,7 @@
-# Gogo
+# Penta
 #### Redefining search, now every search has a context!
-Project for hackout-20
 
-#### Why Gogo?
+#### Why Penta?
 This app aims to bring inanimate things to life. To understand the utility let us look at a use case. Imagine a person bought a new device (like a vacuum cleaner) and now wants to search for a function of a particular button and for which one has to follow a number of steps starting from-
 1. Searching for the model number on the device or the box
 2. Trying to google it
@@ -18,9 +17,6 @@ It is really like bringing inanimate objects to life! Similar situations arise w
 #### Authors
 
 * Prateek Mishra
-
-See also the list of [contributors](https://github.com/MiKinshu/Gogo/graphs/contributors) who participated in the project.
-
-Check out the designed entry of our project on [Figma](https://www.figma.com/file/PJh6dyNK2T9Wau9k1xHXOg/Gogo?node-id=3%3A3) :tada:
-
-Check out the video presentation of our project [YouTube](https://www.youtube.com/watch?v=XWp59RgBb0c)
+* Abhishek Singh
+* Manthan Surkar
+* Roshni Prajapati
