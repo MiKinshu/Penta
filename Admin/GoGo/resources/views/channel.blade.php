@@ -29,6 +29,7 @@
                                         selected
                                     @endif>Private</option>
                                 </select>
+
                             </div>
                         </div>
                     
@@ -39,6 +40,17 @@
                                 </button>
                             </div>
                         </div>
+
+                        <div class="form-group row" style="margin-top: 10px;">
+                            <label for="SelectType" class="col-md-4 col-form-label text-md-right">  Your chanel QR code:</label>
+
+                            <div class="col-md-6">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{$channel->id}}" />
+
+                            </div>
+                        </div>
+                     
+                      
                     </form>
                 </div>
             </div>
@@ -48,15 +60,23 @@
                     <div class="card-header">{{ __('Channel Data') }}</div>
               
                     <div class="card-body">
-                        <form  method="POST"  action="/channel/{{$channel->id}}/data"> 
+                        <form  method="POST"  action="/channel/{{$channel->id}}/data"  enctype="multipart/form-data"> 
 @csrf
                             <div class="form-group row">
-                                <label for="SelectType" class="col-md-4 col-form-label text-md-right">{{ __('Select Channel Type') }}</label>
+                                <label for="SelectType" class="col-md-4 col-form-label text-md-right">{{ __('Enter data') }}</label>
     
                                 <div class="col-md-6">
                                     <textarea class="form-control" name="data" rows="7" id="comment">{{$channel->data}}</textarea>
                                 </div>
                             </div>
+                            <div class="form-group row">
+                                <label for="SelectType" class="col-md-4 col-form-label text-md-right">{{ __('Select Data File (optional)') }}</label>
+    
+                                <div class="col-md-6">
+                                    <input type="file" name="datapdf"> 
+                                </div>
+                            </div>
+                           
               
 
                         <div class="form-group row mb-0">

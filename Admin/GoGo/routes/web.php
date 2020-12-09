@@ -21,8 +21,9 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::post('/channel','ChannelsController@addChannel');
+Route::get('/channel/all','ChannelsController@getAllChannels');
 Route::get('/channel/{id}','ChannelsController@editChannel');
 Route::post('/channel/{id}/type','ChannelsController@changeType');
 Route::post('/channel/{id}/data','ChannelsController@changeData');
 Route::post('/channel/{id}/member','ChannelsController@addMember');
-
+Route::get('/channel/{id}/query','ChannelsController@getQueryAnswer');
