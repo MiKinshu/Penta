@@ -83,6 +83,8 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sahayak_the_assistant);
 
+        this.getSupportActionBar().hide();
+
         Speech.init(this, getPackageName(), mTttsInitListener);
 
         OkHttpClient.Builder b = new OkHttpClient.Builder();
@@ -222,7 +224,7 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
     String sendRequest(String Query){
         Log.d(TAG, "sendRequest: " + MainActivity.ORG);
         HttpUrl.Builder urlBuilder
-                = HttpUrl.parse("https://gogogo.loca.lt" + "/channel/" + MainActivity.ORG + "/query").newBuilder();
+                = HttpUrl.parse("https://gogo1.loca.lt" + "/channel/" + MainActivity.ORG + "/query").newBuilder();
         urlBuilder.addQueryParameter("query", Query);
         urlBuilder.addQueryParameter("email", MainActivity.mEmail);
         String url = urlBuilder.build().toString();
@@ -275,9 +277,22 @@ public class SahayakTheAssistant extends AppCompatActivity implements SpeechDele
         }
     }
 
+    boolean doubleBackToExitPressedOnce = false;
+
     @Override
     public void onBackPressed() {
-        MainActivity.ORG = -1;
-        super.onBackPressed();
+        if (doubleBackToExitPressedOnce) {
+            finishAffinity();
+            System.exit(0);
+        }
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Restart to scan another code.\nPress back again to exit.", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 }

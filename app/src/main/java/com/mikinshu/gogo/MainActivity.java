@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(Void... voids) {
             try {
-                URL audiodb = new URL("https://gogogo.loca.lt/channel/all");
+                URL audiodb = new URL("https://gogo1.loca.lt/channel/all");
                 HttpURLConnection myConnection =(HttpURLConnection) audiodb.openConnection();
                 InputStream stream = new BufferedInputStream(myConnection.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
